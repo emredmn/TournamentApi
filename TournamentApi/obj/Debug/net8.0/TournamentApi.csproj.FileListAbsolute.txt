@@ -111,3 +111,4 @@ C:\Users\Emre\source\repos\TournamentApi\TournamentApi\obj\Debug\net8.0\refint\T
 C:\Users\Emre\source\repos\TournamentApi\TournamentApi\obj\Debug\net8.0\TournamentApi.pdb
 C:\Users\Emre\source\repos\TournamentApi\TournamentApi\obj\Debug\net8.0\TournamentApi.genruntimeconfig.cache
 C:\Users\Emre\source\repos\TournamentApi\TournamentApi\obj\Debug\net8.0\ref\TournamentApi.dll
+C:\Users\Emre\source\repos\TournamentApi\TournamentApi\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

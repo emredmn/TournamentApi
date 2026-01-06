@@ -9,8 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=tournament.db"));
 
-// 2. JWT Auth Ayarlarý
-var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SuperSecretKey123456789!!!")); // Bunu appsettings'den almalýsýn
+// 2. JWT Auth Config
+var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SuperSecretKey123456789!!!SuperSecretKey123456789!!!"));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -25,17 +25,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// 3. GraphQL Kurulumu
+// 3. GraphQL Setup
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
     .AddMutationType<Mutation>()
-    .AddAuthorization() // [Authorize] attribute'u için gerekli
+    .AddAuthorization()
     .AddProjections()
     .AddFiltering()
-    .AddSorting();
+    .AddSorting()
+    .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = true);
 
 var app = builder.Build();
+
+// Ensure the database is created
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
 
 app.UseRouting();
 

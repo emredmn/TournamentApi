@@ -24,10 +24,15 @@ public class Mutation
     {
         // 1. Kullanıcıyı veritabanında bul (Şifre hash kontrolü normalde yapılmalı, burada basit geçiyoruz)
         var user = context.Users.FirstOrDefault(u => u.Email == email);
-        if (user == null) throw new Exception("User not found");
+        if (user == null)
+        {
+            Console.WriteLine($"Login failed: User not found for email {email}");
+            throw new Exception("User not found");
+        }
+        Console.WriteLine($"Login success: User {user.Id} - {user.Email}");
 
         // 2. Token oluştur
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SuperSecretKey123456789!!!")); // Program.cs'deki key ile AYNI olmalı
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SuperSecretKey123456789!!!SuperSecretKey123456789!!!")); // Program.cs'deki key ile AYNI olmalı
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -71,7 +76,7 @@ public class Mutation
 
     // 3. START & BRACKET GENERATION (Diyagramdaki generateBracket mantığı)
     [Authorize]
-    public async Task<Bracket> StartTournament([Service] AppDbContext context, int tournamentId)
+    public async Task<Tournament> StartTournament([Service] AppDbContext context, int tournamentId)
     {
         var tournament = await context.Tournaments
             .Include(t => t.Participants)
@@ -106,7 +111,7 @@ public class Mutation
 
         context.Brackets.Add(bracket);
         await context.SaveChangesAsync();
-        return bracket;
+        return tournament;
     }
 
     // 4. MAÇ OYNAMA (PLAY)
@@ -120,6 +125,10 @@ public class Mutation
         // Kazananı bir sonraki tura taşıma mantığı buraya eklenebilir.
 
         await context.SaveChangesAsync();
+
+        // Yanıt için Winner bilgisini yükle
+        await context.Entry(match).Reference(m => m.Winner).LoadAsync();
+
         return match;
     }
 }

@@ -11,6 +11,7 @@ public class Query
     public IQueryable<Tournament> GetTournaments([Service] AppDbContext context) => context.Tournaments;
 
     [Authorize]
+    [UseProjection]
     public IQueryable<Match> GetMyMatches([Service] AppDbContext context, ClaimsPrincipal claimsPrincipal)
     {
         // Token içindeki ID'yi al
